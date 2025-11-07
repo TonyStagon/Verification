@@ -15,7 +15,7 @@ app.use(cors({
 app.use(express.json());
 
 // Create email transporter
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     host: process.env.VITE_SMTP_HOST,
     port: process.env.VITE_SMTP_PORT || 587,
     secure: false, // Use TLS

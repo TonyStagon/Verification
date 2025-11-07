@@ -13,11 +13,7 @@ npm run email-server
 You should see output like:
 
 ```
-Email server running on http://localhost:3007
-SMTP Configuration:
-- Host: mail.reslocate.net
-- Port: 587
-- User: verification@reslocate.net
+
 ```
 
 ## Step 2: Run the Vite Dev Server (in current terminal)
