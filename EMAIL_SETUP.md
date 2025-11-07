@@ -57,8 +57,6 @@ npm run dev-with-emails
 
 ## SMTP Configuration
 
-Your current SMTP settings:
-
 ## Testing
 
 1. Go to your app at `http://localhost:5173`
