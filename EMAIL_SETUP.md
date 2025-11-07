@@ -59,11 +59,6 @@ npm run dev-with-emails
 
 Your current SMTP settings:
 
-- **Host:** `mail.reslocate.net`
-- **Port:** `587`
-- **Username:** `verification@reslocate.net`
-- **Password:** Your password is stored in `.env` file
-
 ## Testing
 
 1. Go to your app at `http://localhost:5173`
