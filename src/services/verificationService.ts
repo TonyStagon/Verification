@@ -5,10 +5,9 @@ export type ContactType = 'phone' | 'email';
 interface EmailVerificationRequest {
   contact: string;
   code: string;
-  contact_type: ContactType;
 }
 
-const EMAIL_API_URL = 'http://localhost:3007/api';
+const EMAIL_API_URL = 'http://localhost:3001/api';
 console.log('Email server will be available at:', EMAIL_API_URL);
 
 const generateVerificationCode = (): string => {
@@ -66,7 +65,6 @@ export const createVerificationRequest = async (
       const emailResult = await sendEmailVerification({
         contact: data.contact,
         code: finalCode,
-        contact_type: data.contact_type,
       });
       
       if (!emailResult.success) {
@@ -127,24 +125,47 @@ export const verifyEmailVerificationCode = async (
   code: string
 ): Promise<{ success: boolean; error?: string; verificationId?: string }> => {
   try {
+    if (!isValidEmail(email)) {
+      return { success: false, error: 'Invalid email address' };
+    }
+
+    // First check if there's an unverified record with this email and code
+    const { data: verificationData, error: fetchError } = await supabase
+      .from('verification_requests')
+      .select('*')
+      .eq('contact', email)
+      .eq('contact_type', 'email')
+      .eq('is_verified', false)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (fetchError || !verificationData) {
+      return { success: false, error: 'Invalid or expired verification request' };
+    }
+
+    // Check if the code matches (case-sensitive comparison)
+    if (verificationData.code !== code) {
+      return { success: false, error: 'Invalid verification code' };
+    }
+
+    // Check expiration
+    if (verificationData.expires_at && new Date(verificationData.expires_at) < new Date()) {
+      return { success: false, error: 'Verification code expired' };
+    }
+
+    // Now update the record to verified
     const { data, error } = await supabase
       .from('verification_requests')
       .update({
         is_verified: true,
         verified_at: new Date().toISOString()
       })
-      .eq('contact', email)
-      .eq('contact_type', 'email')
-      .eq('code', code)
-      .eq('is_verified', false)
-      .select()
+      .eq('id', verificationData.id)
+      .select();
 
-    if (error) {
+    if (error || !data || data.length === 0) {
       return { success: false, error: 'Failed to verify code' };
-    }
-
-    if (!data || data.length === 0) {
-      return { success: false, error: 'Invalid or expired code' };
     }
 
     return { success: true, verificationId: data[0]?.id };
