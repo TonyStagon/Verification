@@ -217,7 +217,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**Built with ❤️ and ☕ by [Your Name]**
+**Built with ❤️ and ☕ by Athur**
 
 🌟 If you found this project helpful, please give it a star!
 
